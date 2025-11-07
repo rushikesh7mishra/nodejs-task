@@ -1,11 +1,9 @@
-// src/hooks/useAuth.js
 import { useState, useEffect } from 'react';
 
 function decodeJwt(token) {
   if (!token) return null;
   try {
     const payload = token.split('.')[1];
-    // atob might produce binary for unicode — this converts safely
     const json = decodeURIComponent(
       Array.prototype.map.call(atob(payload.replace(/-/g, '+').replace(/_/g, '/')), c =>
         '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ROUTES } from '../constants/routes';
 
 export default function Products({ user }) {
   const [products, setProducts] = useState([]);
   const [err, setErr] = useState('');
+  const nav = useNavigate();
 
   const load = async () => {
     try {
@@ -17,6 +18,16 @@ export default function Products({ user }) {
   };
 
   useEffect(() => { load(); }, []);
+
+  const handleDelete = async (id) => {
+    if (!confirm('Delete this product?')) return;
+    try {
+      await api.delete(`/products/${id}`);
+      setProducts(prev => prev.filter(p => p._id !== id));
+    } catch (e) {
+      alert(e?.response?.data?.message || 'Delete failed');
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -31,7 +42,6 @@ export default function Products({ user }) {
         {products.map(p => (
           <div key={p._id} className="bg-white rounded-lg shadow hover:shadow-lg transition p-4 flex flex-col">
             <div className="h-40 bg-gray-100 rounded-md mb-4 flex items-center justify-center text-gray-400">
-              {/* placeholder for image; replace with <img src=... /> if available */}
               <span className="text-sm">Image</span>
             </div>
 
@@ -46,19 +56,28 @@ export default function Products({ user }) {
                 <div className="text-xs text-slate-400">Available: {p.availableStock}</div>
               </div>
 
-              <button
-                onClick={async () => {
-                  try {
-                    await api.post('/cart', { productId: p._id, quantity: 1 });
-                    alert('Added to cart');
-                  } catch (e) {
-                    alert(e?.response?.data?.message || 'Failed to add to cart');
-                  }
-                }}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-md shadow"
-              >
-                Add
-              </button>
+              <div className="flex flex-col items-end gap-2">
+                <button
+                  onClick={async () => {
+                    try {
+                      await api.post('/cart', { productId: p._id, quantity: 1 });
+                      alert('Added to cart');
+                    } catch (e) {
+                      alert(e?.response?.data?.message || 'Failed to add to cart');
+                    }
+                  }}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-md shadow"
+                >
+                  Add
+                </button>
+
+                {user?.role === 'admin' && (
+                  <div className="flex gap-2 mt-2">
+                    <button onClick={() => nav(`/products/edit/${p._id}`)} className="px-3 py-1 border rounded-md text-sm">Edit</button>
+                    <button onClick={() => handleDelete(p._id)} className="px-3 py-1 bg-red-500 text-white rounded-md text-sm">Delete</button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         ))}

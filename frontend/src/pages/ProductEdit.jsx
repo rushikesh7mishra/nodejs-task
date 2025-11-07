@@ -1,33 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function ProductCreate() {
   const [form, setForm] = useState({ name: '', description: '', price: 0, availableStock: 0 });
   const [err, setErr] = useState('');
   const nav = useNavigate();
-  const { id } = useParams();
-  const isEdit = Boolean(id);
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
+  const editId = params.get('edit');
 
   useEffect(() => {
-    if (!isEdit) return;
+    if (!editId) return;
     (async () => {
       try {
-        const res = await api.get(`/products/${id}`);
-        const prod = res.data;
-        setForm({ name: prod.name || '', description: prod.description || '', price: prod.price || 0, availableStock: prod.availableStock || 0 });
+        const res = await api.get(`/products`);
+        const prod = res.data.find(p => p._id === editId);
+        if (prod) setForm({ name: prod.name, description: prod.description || '', price: prod.price, availableStock: prod.availableStock });
+        else setErr('Product not found locally');
       } catch (e) {
         setErr('Failed to load product for edit');
       }
     })();
-  }, [id, isEdit]);
+  }, [editId]);
 
   const submit = async (e) => {
     e.preventDefault();
     setErr('');
     try {
-      if (isEdit) {
-        await api.put(`/products/${id}`, form);
+      if (editId) {
+        await api.put(`/products/${editId}`, form);
       } else {
         await api.post('/products', form);
       }
@@ -40,7 +42,7 @@ export default function ProductCreate() {
   return (
     <div className="min-h-screen bg-slate-50 py-8 px-4">
       <div className="max-w-lg mx-auto bg-white rounded-2xl p-6 shadow">
-        <h2 className="text-2xl font-bold mb-4">{isEdit ? 'Edit Product' : 'Create Product'}</h2>
+        <h2 className="text-2xl font-bold mb-4">{editId ? 'Edit Product' : 'Create Product'}</h2>
         {err && <div className="text-red-600 mb-3">{err}</div>}
 
         <form onSubmit={submit} className="space-y-4">
@@ -51,7 +53,7 @@ export default function ProductCreate() {
             <input type="number" placeholder="Stock" value={form.availableStock} onChange={e=>setForm({...form,availableStock:parseInt(e.target.value||0)})} className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-400" />
           </div>
           <div className="flex justify-end">
-            <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">{isEdit ? 'Save' : 'Create'}</button>
+            <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">{editId ? 'Save' : 'Create'}</button>
           </div>
         </form>
       </div>

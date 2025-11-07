@@ -33,6 +33,14 @@ export default function App() {
                 <ProductCreate />
               </AdminRoute>
             } />
+          <Route
+            path="/products/edit/:id"
+            element={
+              <AdminRoute user={user}>
+                <ProductCreate />
+              </AdminRoute>
+            }
+          />
           <Route path={ROUTES.CART}
             element={
               <ProtectedRoute user={user}>

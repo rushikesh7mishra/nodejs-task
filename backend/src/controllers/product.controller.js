@@ -22,9 +22,28 @@ exports.create = asyncHandler(async (req, res) => {
   res.status(201).json(p);
 });
 
+exports.get = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const p = await Product.findById(id).lean();
+  if (!p) return res.status(404).json({ message: 'Not found' });
+  res.json(p);
+});
+
+
 exports.update = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const upd = await Product.findByIdAndUpdate(id, req.body, { new: true });
+
+  const { error, value } = schema.validate(req.body);
+  if (error) return res.status(400).json({ message: error.message });
+
+  const upd = await Product.findByIdAndUpdate(id, value, { new: true, runValidators: true });
   if (!upd) return res.status(404).json({ message: 'Not found' });
   res.json(upd);
+});
+
+exports.remove = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const deleted = await Product.findByIdAndDelete(id);
+  if (!deleted) return res.status(404).json({ message: 'Not found' });
+  res.json({ ok: true, message: 'Deleted', id: deleted._id });
 });

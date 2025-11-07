@@ -1,23 +1,19 @@
-// src/jobs/agenda.js
 const Agenda = require('agenda');
 const config = require('../config');
 
-let agendaInstance = null;
+let agenda;
 
 async function initAgenda() {
-  if (agendaInstance) return agendaInstance; // already started
-  agendaInstance = new Agenda({ db: { address: config.MONGO_URI, collection: 'agendaJobs' } });
-
-  // load job definitions
-  require('./orderTimeout.job')(agendaInstance);
-
-  await agendaInstance.start();
+  if (agenda) return agenda;
+  agenda = new Agenda({ db: { address: config.MONGO_URI, collection: 'agendaJobs' } });
+  require('./orderTimeout.job')(agenda);
+  await agenda.start();
   console.log('Agenda started');
-  return agendaInstance;
+  return agenda;
 }
 
 function getAgenda() {
-  return agendaInstance;
+  return agenda;
 }
 
-module.exports = { initAgenda, getAgenda };
+module.exports = { initAgenda, getAgenda, agendaRef: () => agenda };

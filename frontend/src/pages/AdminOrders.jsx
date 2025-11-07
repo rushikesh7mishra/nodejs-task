@@ -6,7 +6,7 @@ export default function AdminOrders() {
 
   const load = async () => {
     try {
-      const res = await api.get('/orders'); // replace with admin endpoint if available
+      const res = await api.get('/orders');
       setOrders(res.data);
     } catch (e) {
       console.error(e);

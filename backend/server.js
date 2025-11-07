@@ -14,7 +14,6 @@ const { errorHandler } = require('./src/middleware/error.middleware');
 
 const app = express();
 
-// Health check route - AT THE VERY TOP, before any middleware
 app.get('/api/health', (req, res) => {
   console.log('✅ Health endpoint accessed successfully!');
   res.json({ 
@@ -23,17 +22,14 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Now add middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Debug middleware
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
 
-// routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
@@ -54,7 +50,6 @@ async function start() {
 
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
-      console.log(`Health endpoint: http://localhost:${PORT}/api/health`);
     });
   } catch (err) {
     console.error('Failed to start', err);

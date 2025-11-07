@@ -16,13 +16,11 @@ export default function Navbar({ user, onLogout }) {
     <nav className="bg-white border-b shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Left: Brand */}
           <div className="flex items-center gap-6">
             <Link to={ROUTES.HOME} className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-md bg-indigo-600 flex items-center justify-center text-white font-bold">M</div>
               <span className="font-semibold text-lg text-slate-900">MyShop</span>
             </Link>
-            {/* Desktop nav links */}
             <div className="hidden md:flex items-center gap-4">
               <Link to={ROUTES.PRODUCTS} className="text-sm text-slate-600 hover:text-slate-900 transition">Products</Link>
               <Link to={ROUTES.CART} className="text-sm text-slate-600 hover:text-slate-900 transition">Cart</Link>
@@ -33,9 +31,7 @@ export default function Navbar({ user, onLogout }) {
             </div>
           </div>
 
-          {/* Right: Auth / actions */}
           <div className="flex items-center gap-4">
-            {/* Desktop auth actions */}
             <div className="hidden md:flex items-center gap-3">
               {!user ? (
                 <>
@@ -50,7 +46,6 @@ export default function Navbar({ user, onLogout }) {
               )}
             </div>
 
-            {/* Mobile menu button */}
             <div className="md:hidden">
               <button
                 aria-label="Toggle menu"
@@ -71,7 +66,6 @@ export default function Navbar({ user, onLogout }) {
         </div>
       </div>
 
-      {/* Mobile panel */}
       <div className={`md:hidden bg-white border-t ${open ? 'block' : 'hidden'}`}>
         <div className="px-4 pt-4 pb-6 space-y-3">
           <div className="flex flex-col gap-2">

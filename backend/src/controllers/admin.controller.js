@@ -10,7 +10,6 @@ exports.updateOrderStatus = asyncHandler(async (req, res) => {
   const order = await Order.findById(id);
   if (!order) return res.status(404).json({ message: 'Order not found' });
 
-  // simple allowed transition check (example)
   if (order.status === 'PENDING_PAYMENT' && status === 'DELIVERED') {
     return res.status(400).json({ message: 'Cannot deliver unpaid order' });
   }
